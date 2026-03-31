@@ -23,7 +23,9 @@ public partial class MainWindow : Window
 
         switch (e.Key)
         {
-            // Shifted number keys produce symbols
+            // Shifted keys: Shift+5 = %, Shift+8 = ×, Shift+= = +
+            // These must appear before the unshifted digit/equals cases
+            // because C# evaluates cases top-to-bottom.
             case Key.D5 when shift:
                 vm.PercentCommand.Execute(null); break;
             case Key.D8 when shift:
@@ -66,6 +68,7 @@ public partial class MainWindow : Window
             // Main keyboard operator keys
             case Key.OemMinus:
                 vm.OperationCommand.Execute("−"); break;
+            // = key (unshifted OemPlus on US keyboards)
             case Key.OemPlus:
                 vm.EqualsCommand.Execute(null); break;
 

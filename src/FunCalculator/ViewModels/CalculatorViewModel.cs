@@ -134,6 +134,7 @@ public sealed class CalculatorViewModel : INotifyPropertyChanged
             return;
         }
 
+        // Single digit "5" or negative single digit "-5" → reset to zero
         if (Display.Length == 1 || (Display.Length == 2 && Display[0] == '-'))
         {
             Display = "0";
