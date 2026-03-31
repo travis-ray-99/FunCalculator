@@ -36,19 +36,23 @@ public sealed class CalculatorViewModel : INotifyPropertyChanged
     public ICommand OperationCommand { get; }
     public ICommand EqualsCommand { get; }
     public ICommand ClearCommand { get; }
+    public ICommand ClearEntryCommand { get; }
+    public ICommand BackspaceCommand { get; }
     public ICommand NegateCommand { get; }
     public ICommand PercentCommand { get; }
     public ICommand DecimalCommand { get; }
 
     public CalculatorViewModel()
     {
-        DigitCommand     = new RelayCommand(OnDigit);
-        OperationCommand = new RelayCommand(OnOperation);
-        EqualsCommand    = new RelayCommand(_ => OnEquals());
-        ClearCommand     = new RelayCommand(_ => OnClear());
-        NegateCommand    = new RelayCommand(_ => OnNegate());
-        PercentCommand   = new RelayCommand(_ => OnPercent());
-        DecimalCommand   = new RelayCommand(_ => OnDecimal());
+        DigitCommand      = new RelayCommand(OnDigit);
+        OperationCommand  = new RelayCommand(OnOperation);
+        EqualsCommand     = new RelayCommand(_ => OnEquals());
+        ClearCommand      = new RelayCommand(_ => OnClear());
+        ClearEntryCommand = new RelayCommand(_ => OnClearEntry());
+        BackspaceCommand  = new RelayCommand(_ => OnBackspace());
+        NegateCommand     = new RelayCommand(_ => OnNegate());
+        PercentCommand    = new RelayCommand(_ => OnPercent());
+        DecimalCommand    = new RelayCommand(_ => OnDecimal());
     }
 
     // ── Command handlers ────────────────────────────────────────────
@@ -108,6 +112,41 @@ public sealed class CalculatorViewModel : INotifyPropertyChanged
         Expression = "";
         _isNewEntry = true;
         _hasDecimalPoint = false;
+    }
+
+    private void OnClearEntry()
+    {
+        Display = "0";
+        _isNewEntry = true;
+        _hasDecimalPoint = false;
+        _engine.SetCurrentValue(0);
+    }
+
+    private void OnBackspace()
+    {
+        if (_isNewEntry) return;
+        if (Display == "0") return;
+
+        // Handle error/special displays
+        if (Display.Contains("Oops") || Display == "∞")
+        {
+            OnClear();
+            return;
+        }
+
+        if (Display.Length == 1 || (Display.Length == 2 && Display[0] == '-'))
+        {
+            Display = "0";
+            _isNewEntry = true;
+            _hasDecimalPoint = false;
+        }
+        else
+        {
+            if (Display[^1] == '.') _hasDecimalPoint = false;
+            Display = Display[..^1];
+        }
+
+        _engine.SetCurrentValue(ParseDisplay());
     }
 
     private void OnNegate()

@@ -109,6 +109,72 @@ public class CalculatorViewModelTests
     }
 
     [Fact]
+    public void ClearEntryCommand_ResetsDisplayButKeepsPendingOperation()
+    {
+        _vm.DigitCommand.Execute("5");
+        _vm.OperationCommand.Execute("+");
+        _vm.DigitCommand.Execute("3");
+        _vm.ClearEntryCommand.Execute(null);
+
+        Assert.Equal("0", _vm.Display);
+        // Expression should still be set from the operation
+        Assert.Equal("5 +", _vm.Expression);
+
+        // Continue with a new number and evaluate
+        _vm.DigitCommand.Execute("7");
+        _vm.EqualsCommand.Execute(null);
+        Assert.Equal("12", _vm.Display);
+    }
+
+    [Fact]
+    public void BackspaceCommand_RemovesLastDigit()
+    {
+        _vm.DigitCommand.Execute("1");
+        _vm.DigitCommand.Execute("2");
+        _vm.DigitCommand.Execute("3");
+        _vm.BackspaceCommand.Execute(null);
+
+        Assert.Equal("12", _vm.Display);
+    }
+
+    [Fact]
+    public void BackspaceCommand_SingleDigit_ResetsToZero()
+    {
+        _vm.DigitCommand.Execute("5");
+        _vm.BackspaceCommand.Execute(null);
+
+        Assert.Equal("0", _vm.Display);
+    }
+
+    [Fact]
+    public void BackspaceCommand_RemovesDecimalPoint()
+    {
+        _vm.DigitCommand.Execute("3");
+        _vm.DecimalCommand.Execute(null);
+        _vm.BackspaceCommand.Execute(null);
+
+        Assert.Equal("3", _vm.Display);
+
+        // Should be able to add decimal again after removing it
+        _vm.DecimalCommand.Execute(null);
+        _vm.DigitCommand.Execute("5");
+        Assert.Equal("3.5", _vm.Display);
+    }
+
+    [Fact]
+    public void BackspaceCommand_OnNewEntry_DoesNothing()
+    {
+        // After equals, display is in "new entry" state
+        _vm.DigitCommand.Execute("5");
+        _vm.OperationCommand.Execute("+");
+        _vm.DigitCommand.Execute("3");
+        _vm.EqualsCommand.Execute(null);
+
+        _vm.BackspaceCommand.Execute(null);
+        Assert.Equal("8", _vm.Display);
+    }
+
+    [Fact]
     public void NegateCommand_FlipsSign()
     {
         _vm.DigitCommand.Execute("5");

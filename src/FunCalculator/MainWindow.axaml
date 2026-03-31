@@ -4,12 +4,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:FunCalculator.ViewModels"
         mc:Ignorable="d"
-        d:DesignWidth="400" d:DesignHeight="620"
+        d:DesignWidth="400" d:DesignHeight="700"
         x:Class="FunCalculator.MainWindow"
         x:DataType="vm:CalculatorViewModel"
         Title="🍬 Fun Calculator 🍬"
-        Width="400" Height="620"
-        MinWidth="340" MinHeight="520"
+        Width="400" Height="700"
+        MinWidth="340" MinHeight="580"
         Background="Transparent"
         TransparencyLevelHint="AcrylicBlur">
 
@@ -18,9 +18,9 @@
 
     <!-- Base calculator button -->
     <Style Selector="Button.calc-btn">
-      <Setter Property="CornerRadius"  Value="16"/>
-      <Setter Property="FontSize"      Value="26"/>
-      <Setter Property="FontWeight"    Value="SemiBold"/>
+      <Setter Property="CornerRadius"  Value="20"/>
+      <Setter Property="FontSize"      Value="28"/>
+      <Setter Property="FontWeight"    Value="Bold"/>
       <Setter Property="Margin"        Value="5"/>
       <Setter Property="Padding"       Value="0"/>
       <Setter Property="Foreground"    Value="White"/>
@@ -28,17 +28,31 @@
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment"   Value="Center"/>
       <Setter Property="Cursor"        Value="Hand"/>
+      <Setter Property="Focusable"     Value="False"/>
       <Setter Property="RenderTransform" Value="scale(1)"/>
       <Setter Property="Template">
         <ControlTemplate>
-          <Border Background="{TemplateBinding Background}"
-                  CornerRadius="16"
-                  BoxShadow="0 4 12 0 #40000000">
-            <ContentPresenter Content="{TemplateBinding Content}"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              Margin="{TemplateBinding Padding}"/>
-          </Border>
+          <Panel>
+            <Border Background="{TemplateBinding Background}"
+                    CornerRadius="20"
+                    BoxShadow="0 5 14 0 #50000000">
+              <ContentPresenter Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="{TemplateBinding Padding}"/>
+            </Border>
+            <!-- Glossy shine overlay -->
+            <Border CornerRadius="20"
+                    IsHitTestVisible="False"
+                    Opacity="0.18">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+                  <GradientStop Color="White" Offset="0"/>
+                  <GradientStop Color="Transparent" Offset="0.55"/>
+                </LinearGradientBrush>
+              </Border.Background>
+            </Border>
+          </Panel>
         </ControlTemplate>
       </Setter>
       <Setter Property="Transitions">
@@ -50,33 +64,26 @@
     </Style>
 
     <Style Selector="Button.calc-btn:pointerover">
-      <Setter Property="Opacity"        Value="0.82"/>
-      <Setter Property="RenderTransform" Value="scale(1.06)"/>
+      <Setter Property="Opacity"        Value="0.85"/>
+      <Setter Property="RenderTransform" Value="scale(1.05)"/>
     </Style>
 
     <Style Selector="Button.calc-btn:pressed">
-      <Setter Property="RenderTransform" Value="scale(0.92)"/>
+      <Setter Property="RenderTransform" Value="scale(0.93)"/>
       <Setter Property="Opacity"         Value="0.65"/>
     </Style>
 
-    <!-- Number buttons: frosted glass look -->
+    <!-- Number buttons: pink-purple gradient -->
     <Style Selector="Button.num-btn">
-      <Setter Property="Background" Value="#55FFFFFF"/>
-    </Style>
-
-    <!-- Function buttons (C, ±, %) -->
-    <Style Selector="Button.func-btn">
-      <Setter Property="Background" Value="#CC9575CD"/>
-    </Style>
-
-    <!-- Operator buttons (+, −, ×, ÷) -->
-    <Style Selector="Button.op-btn">
-      <Setter Property="Background" Value="#CCFF6B6B"/>
-    </Style>
-
-    <!-- Equals button -->
-    <Style Selector="Button.eq-btn">
-      <Setter Property="Background" Value="#CCFFB74D"/>
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#C084FC" Offset="0.0"/>
+            <GradientStop Color="#E879F9" Offset="0.5"/>
+            <GradientStop Color="#F472B6" Offset="1.0"/>
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
     </Style>
 
     <!-- Display text glow animation -->
@@ -94,10 +101,11 @@
   <Border CornerRadius="24" ClipToBounds="True" Margin="0">
     <Border.Background>
       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-        <GradientStop Color="#764ba2" Offset="0.0"/>
-        <GradientStop Color="#667eea" Offset="0.35"/>
-        <GradientStop Color="#f093fb" Offset="0.7"/>
-        <GradientStop Color="#5ee7df" Offset="1.0"/>
+        <GradientStop Color="#1a0a3e" Offset="0.0"/>
+        <GradientStop Color="#2d1068" Offset="0.25"/>
+        <GradientStop Color="#5b21b6" Offset="0.5"/>
+        <GradientStop Color="#86198f" Offset="0.75"/>
+        <GradientStop Color="#9d174d" Offset="1.0"/>
       </LinearGradientBrush>
     </Border.Background>
 
@@ -107,23 +115,24 @@
       <TextBlock Grid.Row="0"
                  Text="🍬 Fun Calculator 🍬"
                  HorizontalAlignment="Center"
-                 FontSize="22" FontWeight="Bold"
+                 FontSize="24" FontWeight="Bold"
                  Foreground="White"
-                 Margin="0,6,0,2">
+                 Margin="0,8,0,4">
         <TextBlock.Effect>
-          <DropShadowEffect Color="#80000000" BlurRadius="6" OffsetX="0" OffsetY="2"/>
+          <DropShadowEffect Color="#C0000000" BlurRadius="8" OffsetX="0" OffsetY="2"/>
         </TextBlock.Effect>
       </TextBlock>
 
       <!-- ─── Display area ────────────────────────────────────── -->
       <Border Grid.Row="1"
-              CornerRadius="18"
+              CornerRadius="20"
               Margin="0,8"
-              Padding="20,12"
-              MinHeight="110">
+              Padding="22,14"
+              MinHeight="120">
         <Border.Background>
-          <SolidColorBrush Color="#000000" Opacity="0.28"/>
+          <SolidColorBrush Color="#0c0824" Opacity="0.72"/>
         </Border.Background>
+        <Border.BoxShadow>inset 0 2 8 0 #30000000</Border.BoxShadow>
         <StackPanel VerticalAlignment="Bottom">
           <TextBlock Text="{Binding Expression}"
                      Foreground="#99FFFFFF"
@@ -133,32 +142,61 @@
           <TextBlock Classes="display-text"
                      Text="{Binding Display}"
                      Foreground="White"
-                     FontSize="48"
+                     FontSize="52"
                      FontWeight="Bold"
                      HorizontalAlignment="Right"
                      TextTrimming="CharacterEllipsis">
             <TextBlock.Effect>
-              <DropShadowEffect Color="#60FFFFFF" BlurRadius="10" OffsetX="0" OffsetY="0"/>
+              <DropShadowEffect Color="#80FFFFFF" BlurRadius="14" OffsetX="0" OffsetY="0"/>
             </TextBlock.Effect>
           </TextBlock>
         </StackPanel>
       </Border>
 
-      <!-- ─── Button grid ─────────────────────────────────────── -->
+      <!-- ─── Button grid (5 columns) ─────────────────────────── -->
       <Grid Grid.Row="2"
             RowDefinitions="*,*,*,*,*"
-            ColumnDefinitions="*,*,*,*"
+            ColumnDefinitions="*,*,*,*,*"
             Margin="0,4,0,0">
 
-        <!-- Row 0 : C  ±  %  ÷ -->
-        <Button Grid.Row="0" Grid.Column="0" Classes="calc-btn func-btn"
-                Content="🧹 C" Command="{Binding ClearCommand}"/>
-        <Button Grid.Row="0" Grid.Column="1" Classes="calc-btn func-btn"
-                Content="±" Command="{Binding NegateCommand}"/>
-        <Button Grid.Row="0" Grid.Column="2" Classes="calc-btn func-btn"
-                Content="%" Command="{Binding PercentCommand}"/>
-        <Button Grid.Row="0" Grid.Column="3" Classes="calc-btn op-btn"
-                Content="÷" Command="{Binding OperationCommand}" CommandParameter="÷"/>
+        <!-- Row 0 : 🧹  C  %  ÷ -->
+        <Button Grid.Row="0" Grid.Column="0" Classes="calc-btn"
+                Content="🧹" Command="{Binding ClearCommand}">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#6366f1" Offset="0"/>
+              <GradientStop Color="#4338ca" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="1" Classes="calc-btn"
+                Content="C" Command="{Binding ClearEntryCommand}">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#8b5cf6" Offset="0"/>
+              <GradientStop Color="#6d28d9" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="2" Classes="calc-btn"
+                Content="%" Command="{Binding PercentCommand}">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#a78bfa" Offset="0"/>
+              <GradientStop Color="#8b5cf6" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
+        <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Classes="calc-btn"
+                Content="÷" Command="{Binding OperationCommand}" CommandParameter="÷">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#fb923c" Offset="0"/>
+              <GradientStop Color="#f97316" Offset="0.5"/>
+              <GradientStop Color="#ef4444" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
 
         <!-- Row 1 : 7  8  9  × -->
         <Button Grid.Row="1" Grid.Column="0" Classes="calc-btn num-btn"
@@ -167,8 +205,15 @@
                 Content="8" Command="{Binding DigitCommand}" CommandParameter="8"/>
         <Button Grid.Row="1" Grid.Column="2" Classes="calc-btn num-btn"
                 Content="9" Command="{Binding DigitCommand}" CommandParameter="9"/>
-        <Button Grid.Row="1" Grid.Column="3" Classes="calc-btn op-btn"
-                Content="×" Command="{Binding OperationCommand}" CommandParameter="×"/>
+        <Button Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Classes="calc-btn"
+                Content="×" Command="{Binding OperationCommand}" CommandParameter="×">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#a855f7" Offset="0"/>
+              <GradientStop Color="#7e22ce" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
 
         <!-- Row 2 : 4  5  6  − -->
         <Button Grid.Row="2" Grid.Column="0" Classes="calc-btn num-btn"
@@ -177,8 +222,16 @@
                 Content="5" Command="{Binding DigitCommand}" CommandParameter="5"/>
         <Button Grid.Row="2" Grid.Column="2" Classes="calc-btn num-btn"
                 Content="6" Command="{Binding DigitCommand}" CommandParameter="6"/>
-        <Button Grid.Row="2" Grid.Column="3" Classes="calc-btn op-btn"
-                Content="−" Command="{Binding OperationCommand}" CommandParameter="−"/>
+        <Button Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Classes="calc-btn"
+                Content="−" Command="{Binding OperationCommand}" CommandParameter="−">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#f472b6" Offset="0"/>
+              <GradientStop Color="#ec4899" Offset="0.5"/>
+              <GradientStop Color="#e11d48" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
 
         <!-- Row 3 : 1  2  3  + -->
         <Button Grid.Row="3" Grid.Column="0" Classes="calc-btn num-btn"
@@ -187,16 +240,32 @@
                 Content="2" Command="{Binding DigitCommand}" CommandParameter="2"/>
         <Button Grid.Row="3" Grid.Column="2" Classes="calc-btn num-btn"
                 Content="3" Command="{Binding DigitCommand}" CommandParameter="3"/>
-        <Button Grid.Row="3" Grid.Column="3" Classes="calc-btn op-btn"
-                Content="+" Command="{Binding OperationCommand}" CommandParameter="+"/>
+        <Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Classes="calc-btn"
+                Content="+" Command="{Binding OperationCommand}" CommandParameter="+">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#8b5cf6" Offset="0"/>
+              <GradientStop Color="#6d28d9" Offset="0.5"/>
+              <GradientStop Color="#5b21b6" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
 
-        <!-- Row 4 : 0 (wide)  .  = -->
+        <!-- Row 4 : 0 (wide)  •  ✨ = ✨ -->
         <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Classes="calc-btn num-btn"
                 Content="0" Command="{Binding DigitCommand}" CommandParameter="0"/>
         <Button Grid.Row="4" Grid.Column="2" Classes="calc-btn num-btn"
                 Content="•" Command="{Binding DecimalCommand}"/>
-        <Button Grid.Row="4" Grid.Column="3" Classes="calc-btn eq-btn"
-                Content="✨ =" Command="{Binding EqualsCommand}"/>
+        <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Classes="calc-btn"
+                Content="✨ = ✨" Command="{Binding EqualsCommand}">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#fbbf24" Offset="0"/>
+              <GradientStop Color="#f59e0b" Offset="0.5"/>
+              <GradientStop Color="#f97316" Offset="1"/>
+            </LinearGradientBrush>
+          </Button.Background>
+        </Button>
 
       </Grid>
     </Grid>
