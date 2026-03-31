@@ -1,0 +1,204 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:FunCalculator.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="400" d:DesignHeight="620"
+        x:Class="FunCalculator.MainWindow"
+        x:DataType="vm:CalculatorViewModel"
+        Title="🍬 Fun Calculator 🍬"
+        Width="400" Height="620"
+        MinWidth="340" MinHeight="520"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur">
+
+  <!-- ═══ Button styles ═══════════════════════════════════════════ -->
+  <Window.Styles>
+
+    <!-- Base calculator button -->
+    <Style Selector="Button.calc-btn">
+      <Setter Property="CornerRadius"  Value="16"/>
+      <Setter Property="FontSize"      Value="26"/>
+      <Setter Property="FontWeight"    Value="SemiBold"/>
+      <Setter Property="Margin"        Value="5"/>
+      <Setter Property="Padding"       Value="0"/>
+      <Setter Property="Foreground"    Value="White"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment"   Value="Center"/>
+      <Setter Property="Cursor"        Value="Hand"/>
+      <Setter Property="RenderTransform" Value="scale(1)"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  CornerRadius="16"
+                  BoxShadow="0 4 12 0 #40000000">
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Margin="{TemplateBinding Padding}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1"/>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.calc-btn:pointerover">
+      <Setter Property="Opacity"        Value="0.82"/>
+      <Setter Property="RenderTransform" Value="scale(1.06)"/>
+    </Style>
+
+    <Style Selector="Button.calc-btn:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.92)"/>
+      <Setter Property="Opacity"         Value="0.65"/>
+    </Style>
+
+    <!-- Number buttons: frosted glass look -->
+    <Style Selector="Button.num-btn">
+      <Setter Property="Background" Value="#55FFFFFF"/>
+    </Style>
+
+    <!-- Function buttons (C, ±, %) -->
+    <Style Selector="Button.func-btn">
+      <Setter Property="Background" Value="#CC9575CD"/>
+    </Style>
+
+    <!-- Operator buttons (+, −, ×, ÷) -->
+    <Style Selector="Button.op-btn">
+      <Setter Property="Background" Value="#CCFF6B6B"/>
+    </Style>
+
+    <!-- Equals button -->
+    <Style Selector="Button.eq-btn">
+      <Setter Property="Background" Value="#CCFFB74D"/>
+    </Style>
+
+    <!-- Display text glow animation -->
+    <Style Selector="TextBlock.display-text">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+  </Window.Styles>
+
+  <!-- ═══ Main layout ═════════════════════════════════════════════ -->
+  <Border CornerRadius="24" ClipToBounds="True" Margin="0">
+    <Border.Background>
+      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#764ba2" Offset="0.0"/>
+        <GradientStop Color="#667eea" Offset="0.35"/>
+        <GradientStop Color="#f093fb" Offset="0.7"/>
+        <GradientStop Color="#5ee7df" Offset="1.0"/>
+      </LinearGradientBrush>
+    </Border.Background>
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="14,10,14,14">
+
+      <!-- ─── Title ───────────────────────────────────────────── -->
+      <TextBlock Grid.Row="0"
+                 Text="🍬 Fun Calculator 🍬"
+                 HorizontalAlignment="Center"
+                 FontSize="22" FontWeight="Bold"
+                 Foreground="White"
+                 Margin="0,6,0,2">
+        <TextBlock.Effect>
+          <DropShadowEffect Color="#80000000" BlurRadius="6" OffsetX="0" OffsetY="2"/>
+        </TextBlock.Effect>
+      </TextBlock>
+
+      <!-- ─── Display area ────────────────────────────────────── -->
+      <Border Grid.Row="1"
+              CornerRadius="18"
+              Margin="0,8"
+              Padding="20,12"
+              MinHeight="110">
+        <Border.Background>
+          <SolidColorBrush Color="#000000" Opacity="0.28"/>
+        </Border.Background>
+        <StackPanel VerticalAlignment="Bottom">
+          <TextBlock Text="{Binding Expression}"
+                     Foreground="#99FFFFFF"
+                     FontSize="16"
+                     HorizontalAlignment="Right"
+                     Margin="0,0,0,4"/>
+          <TextBlock Classes="display-text"
+                     Text="{Binding Display}"
+                     Foreground="White"
+                     FontSize="48"
+                     FontWeight="Bold"
+                     HorizontalAlignment="Right"
+                     TextTrimming="CharacterEllipsis">
+            <TextBlock.Effect>
+              <DropShadowEffect Color="#60FFFFFF" BlurRadius="10" OffsetX="0" OffsetY="0"/>
+            </TextBlock.Effect>
+          </TextBlock>
+        </StackPanel>
+      </Border>
+
+      <!-- ─── Button grid ─────────────────────────────────────── -->
+      <Grid Grid.Row="2"
+            RowDefinitions="*,*,*,*,*"
+            ColumnDefinitions="*,*,*,*"
+            Margin="0,4,0,0">
+
+        <!-- Row 0 : C  ±  %  ÷ -->
+        <Button Grid.Row="0" Grid.Column="0" Classes="calc-btn func-btn"
+                Content="🧹 C" Command="{Binding ClearCommand}"/>
+        <Button Grid.Row="0" Grid.Column="1" Classes="calc-btn func-btn"
+                Content="±" Command="{Binding NegateCommand}"/>
+        <Button Grid.Row="0" Grid.Column="2" Classes="calc-btn func-btn"
+                Content="%" Command="{Binding PercentCommand}"/>
+        <Button Grid.Row="0" Grid.Column="3" Classes="calc-btn op-btn"
+                Content="÷" Command="{Binding OperationCommand}" CommandParameter="÷"/>
+
+        <!-- Row 1 : 7  8  9  × -->
+        <Button Grid.Row="1" Grid.Column="0" Classes="calc-btn num-btn"
+                Content="7" Command="{Binding DigitCommand}" CommandParameter="7"/>
+        <Button Grid.Row="1" Grid.Column="1" Classes="calc-btn num-btn"
+                Content="8" Command="{Binding DigitCommand}" CommandParameter="8"/>
+        <Button Grid.Row="1" Grid.Column="2" Classes="calc-btn num-btn"
+                Content="9" Command="{Binding DigitCommand}" CommandParameter="9"/>
+        <Button Grid.Row="1" Grid.Column="3" Classes="calc-btn op-btn"
+                Content="×" Command="{Binding OperationCommand}" CommandParameter="×"/>
+
+        <!-- Row 2 : 4  5  6  − -->
+        <Button Grid.Row="2" Grid.Column="0" Classes="calc-btn num-btn"
+                Content="4" Command="{Binding DigitCommand}" CommandParameter="4"/>
+        <Button Grid.Row="2" Grid.Column="1" Classes="calc-btn num-btn"
+                Content="5" Command="{Binding DigitCommand}" CommandParameter="5"/>
+        <Button Grid.Row="2" Grid.Column="2" Classes="calc-btn num-btn"
+                Content="6" Command="{Binding DigitCommand}" CommandParameter="6"/>
+        <Button Grid.Row="2" Grid.Column="3" Classes="calc-btn op-btn"
+                Content="−" Command="{Binding OperationCommand}" CommandParameter="−"/>
+
+        <!-- Row 3 : 1  2  3  + -->
+        <Button Grid.Row="3" Grid.Column="0" Classes="calc-btn num-btn"
+                Content="1" Command="{Binding DigitCommand}" CommandParameter="1"/>
+        <Button Grid.Row="3" Grid.Column="1" Classes="calc-btn num-btn"
+                Content="2" Command="{Binding DigitCommand}" CommandParameter="2"/>
+        <Button Grid.Row="3" Grid.Column="2" Classes="calc-btn num-btn"
+                Content="3" Command="{Binding DigitCommand}" CommandParameter="3"/>
+        <Button Grid.Row="3" Grid.Column="3" Classes="calc-btn op-btn"
+                Content="+" Command="{Binding OperationCommand}" CommandParameter="+"/>
+
+        <!-- Row 4 : 0 (wide)  .  = -->
+        <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Classes="calc-btn num-btn"
+                Content="0" Command="{Binding DigitCommand}" CommandParameter="0"/>
+        <Button Grid.Row="4" Grid.Column="2" Classes="calc-btn num-btn"
+                Content="•" Command="{Binding DecimalCommand}"/>
+        <Button Grid.Row="4" Grid.Column="3" Classes="calc-btn eq-btn"
+                Content="✨ =" Command="{Binding EqualsCommand}"/>
+
+      </Grid>
+    </Grid>
+  </Border>
+</Window>
